@@ -1,0 +1,15 @@
+@use 'src/styles/vars';
+@use 'sass:color';
+
+.boardgames {
+    text-align: center;
+    background-color: vars.$alt-color;
+    padding: vars.$gutter;
+
+    &-title {
+        color: vars.$title-color;
+        font-family: vars.$title-font;
+        font-size: 3rem;
+        transition: ease-in-out 0.5s;
+    }
+}

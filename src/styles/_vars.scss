@@ -1,0 +1,24 @@
+@use 'sass:color';
+@font-face {
+    font-family: 'iomanoid';
+    src: url('src/assets/fonts/iomanoid.ttf');
+}
+// Generic
+$primary-color: #6bb487;
+$alt-color: rgb(232, 255, 242);
+$dark-color: color.scale($primary-color, $blackness: 10%);
+$light-color: color.scale($primary-color, $lightness: 30%);
+$gutter: 2rem;
+
+// Global
+$global-font: 'Roboto', sans-serif;
+$global-font-weight: 300;
+
+// Title
+$title-font: 'iomanoid', sans-serif;
+$title-font-weight: 500;
+$title-color: color.scale($primary-color, $lightness: -60%);
+
+// Post
+$post-text-color: #666;
+$post-hover-color: #f7f7f7;

@@ -1,0 +1,39 @@
+@use 'src/styles/vars';
+@use 'sass:color';
+
+
+
+.header {
+    text-align: center;
+    padding: vars.$gutter;
+    border-bottom: 1px solid vars.$alt-color;
+
+    &-title {
+        color: vars.$title-color;
+        font-family: vars.$title-font;
+        font-size: 5rem;
+        transition: ease-in-out 0.5s;
+
+        &:hover {
+            color: color.scale(vars.$title-color, $lightness: 15%);
+        }
+    }
+}
+
+.menu {
+    padding: vars.$gutter;
+
+    &-link {
+        padding: vars.$gutter;
+        font-family: vars.$global-font;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 1rem;
+        cursor: pointer;
+        color: vars.$dark-color;
+
+        &:hover {
+            color: color.scale(vars.$primary-color, $lightness: -20%);
+        }
+    }
+}
