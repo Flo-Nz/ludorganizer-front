@@ -5,33 +5,24 @@ import './styles.scss';
 import { Card } from 'semantic-ui-react';
 
 // == Composant
-const Boardgames = () => (
+const Boardgames = ({ boardgames }) => (
   
   <main className="boardgames">
     <h1 className="boardgames-title">Liste des jeux</h1>
     <div className="boardgames-list">
       <Card.Group itemsPerRow={4}>
-        <Card
-          color='olive'
-          image='/images/avatar/large/elliot.jpg'
-          header='Elliot Baker'
-          meta='Friend'
-          description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-        />
-        <Card
+      {
+        boardgames.map((bg) => (
+          <Card
+          key={bg.id}
           color='green'
-          image='/images/avatar/large/elliot.jpg'
-          header='Elliot Baker'
-          meta='Friend'
-          description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
+          image={bg.picture_url}
+          header={bg.name}
+          meta={bg.categories[0]['name']}
+          description={"Joueurs : " + bg.min_players + "-" + bg.max_players + " / Durée : " + bg.duration + " minutes"}
         />
-        <Card
-          color='teal'
-          image='/images/avatar/large/elliot.jpg'
-          header='Elliot Baker'
-          meta='Friend'
-          description='Elliot is a sound engineer living in Nashville who enjoys playing guitar and hanging with his cat.'
-        />
+        ))
+      }
       </Card.Group>
     </div>
   </main>

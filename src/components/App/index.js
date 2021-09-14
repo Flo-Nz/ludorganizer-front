@@ -8,21 +8,28 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import NotFound from 'src/components/NotFound';
 import Header from 'src/components/Header';
 import Footer from 'src/components/Footer';
+import useGet from 'src/hooks/useGet';
 
 import './styles.scss';
 import Boardgames from '../Boardgames';
 
-const BASE_URL = 'http://localhost:3333';
+const BASE_URL = 'http://localhost:3000/v1';
 
 // == Composant
 const App = () => {
+
+  const [boardgames, bgLoading] = useGet(`${BASE_URL}/boardgames`);
 
   return (
     <div className="ludorganizer">
       <Header />
       <Switch>
+        <Route path="/boardgames">
+        {
+          !bgLoading && <Boardgames boardgames={boardgames} />
+        }
+        </Route>
         <Route>
-          <Boardgames />
           <NotFound />
         </Route>
       </Switch>

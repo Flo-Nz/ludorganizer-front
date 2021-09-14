@@ -35,5 +35,10 @@
         &:hover {
             color: color.scale(vars.$primary-color, $lightness: -20%);
         }
+
+        &--selected {
+            color: color.scale(vars.$dark-color, $lightness: -35%);
+            font-style: italic;
+        }
     }
 }

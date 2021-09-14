@@ -15,18 +15,24 @@ const Header = () => {
         <NavLink 
         to="/"
         className="menu-link" 
+        activeClassName="menu-link--selected"
+        exact
         >
           Accueil
         </NavLink>
         <NavLink 
         to="/boardgames"
         className="menu-link" 
+        activeClassName="menu-link--selected"
+        exact
         >
           Jeux
         </NavLink>
         <NavLink 
         to="/admin" 
         className="menu-link" 
+        activeClassName="menu-link--selected"
+        exact
         >
           Ludothèque
         </NavLink>
