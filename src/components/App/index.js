@@ -19,6 +19,7 @@ const BASE_URL = 'http://localhost:3000/v1';
 const App = () => {
 
   const [boardgames, bgLoading] = useGet(`${BASE_URL}/boardgames`);
+  const [categories, catLoading] = useGet(`${BASE_URL}/categories`);
 
   return (
     <div className="ludorganizer">
@@ -26,7 +27,7 @@ const App = () => {
       <Switch>
         <Route path="/boardgames">
         {
-          !bgLoading && <Boardgames boardgames={boardgames} />
+          !bgLoading && <Boardgames boardgames={boardgames} categories={categories} />
         }
         </Route>
         <Route>
