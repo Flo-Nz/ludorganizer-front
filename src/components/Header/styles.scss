@@ -1,22 +1,20 @@
 @use 'src/styles/vars';
 @use 'sass:color';
 
-
-
-.header {
+.main-header {
     text-align: center;
     padding: vars.$gutter;
-    border-bottom: 1px solid vars.$alt-color;
+    background-color: vars.$primary-color;
 
     &-title {
-        color: vars.$title-color;
+        color: vars.$alt-color;
         font-family: vars.$title-font;
         font-size: 5rem;
         transition: ease-in-out 0.5s;
 
-        &:hover {
-            color: color.scale(vars.$title-color, $lightness: 15%);
-        }
+        // &:hover {
+        //     color: color.scale(vars.$title-color, $lightness: 15%);
+        // }
     }
 }
 
@@ -30,15 +28,14 @@
         font-weight: bold;
         margin: 0 1rem;
         cursor: pointer;
-        color: vars.$dark-color;
+        color: vars.$alt-color;
 
         &:hover {
-            color: color.scale(vars.$primary-color, $lightness: -20%);
+            color: color.scale(vars.$alt-color, $lightness: -20%);
         }
 
         &--selected {
-            color: color.scale(vars.$dark-color, $lightness: -35%);
-            font-style: italic;
+            color: color.scale(vars.$alt-color, $blackness: 50%);
         }
     }
 }

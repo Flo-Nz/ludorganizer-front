@@ -7,9 +7,9 @@ import './styles.scss';
 // == Composant
 const Header = () => {
   return (
-    <header className="header">
+    <header className="main-header">
       <Link to="/" >
-        <h1 className="header-title">Ludorganizer</h1>
+        <h1 className="main-header-title">Ludorganizer</h1>
       </Link>
     <nav className="menu">
         <NavLink 

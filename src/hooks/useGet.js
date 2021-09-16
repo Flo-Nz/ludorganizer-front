@@ -5,8 +5,6 @@ export default (url) => {
     const [resources, setResources] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    console.log('Je dois aller chercher sur ', url);
-
     const fetchResource = () => {
         setLoading(true);
         axios({

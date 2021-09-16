@@ -4,8 +4,8 @@
     src: url('src/assets/fonts/iomanoid.ttf');
 }
 // Generic
-$primary-color: #6bb487;
-$alt-color: rgb(232, 255, 242);
+$primary-color: #172e20;
+$alt-color: rgb(255, 255, 255);
 $dark-color: color.scale($primary-color, $blackness: 20%);
 $light-color: color.scale($primary-color, $lightness: 30%);
 $gutter: 2rem;
@@ -17,8 +17,5 @@ $global-font-weight: 300;
 // Title
 $title-font: 'iomanoid', sans-serif;
 $title-font-weight: 500;
-$title-color: color.scale($primary-color, $lightness: -60%);
+// $title-color: color.scale($primary-color, $lightness: -60%);
 
-// Post
-$post-text-color: #666;
-$post-hover-color: #f7f7f7;
