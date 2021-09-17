@@ -33,6 +33,9 @@ const AddForm = ( { addFormError, addFormErrorMsg, addFormData, handleAddForm, h
           <label htmlFor="bgDuration">Durée (minutes)
             <input type="number" id="bgDuration" name="bgDuration" placeholder={15} onChange={handleInputChange} value={addFormData.bgDuration}></input>
           </label>
+          <label htmlFor="bgMinAge">Age minimum
+            <input type="number" id="bgMinAge" name="bgMinAge" placeholder={10} onChange={handleInputChange} value={addFormData.bgMinAge}></input>
+          </label>
           <label htmlFor="bgPictureUrl">Lien vers une image
             <input type="text" id="bgPictureUrl" name="bgPictureUrl" placeholder="https://bakaminder.com/images/Default_img.png" onChange={handleInputChange} value={addFormData.bgPictureUrl}></input>
           </label>

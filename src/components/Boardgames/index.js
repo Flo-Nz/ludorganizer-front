@@ -11,7 +11,6 @@ const Boardgames = ({ boardgames, categories }) => {
 
   const getRandomButtonColor = () => {
     const randomNumber = Math.round(Math.random() * ((buttonColors.length + 1) - 1) + 1);
-    console.log('random number', randomNumber);
     return buttonColors[randomNumber];
   }
  
