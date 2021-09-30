@@ -1,8 +1,22 @@
-# React Kickstarter
+# Ludorganizer Front
 
-Simply clone this project to start a react project with all the basics elements you need.
+Le front-end pour le projet Ludorganizer. Se base sur l'API du même nom.
 
-**Don't forget to install all the dependencies with** 
+**Lancement du projet**
+
 ```bash
 yarn
+yarn start
 ```
+
+# Technologies utilisées
+
+- ReactJS
+
+- Material-UI
+
+- Babel
+
+- Webpack
+
+- SASS
