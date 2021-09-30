@@ -2,10 +2,143 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
+import { Box } from '@material-ui/system';
+import { TextField, MenuItem } from '@material-ui/core';
 
 // == Composant
 const AddForm = ( { addFormError, addFormErrorMsg, addFormData, handleAddForm, handleInputChange, categories, themes, difficulties} ) => {
   
+  return (
+    <div className="add">
+      <h1 className="add-title">Ajouter un jeu</h1>
+    <Box
+      component="form"
+      autoComplete="off"
+    >
+        <TextField
+          required
+          id="bgTitle"
+          name="bgTitle"
+          label="Titre du jeu"
+          value={addFormData.bgTitle}
+          onChange={handleInputChange}
+          error={addFormError.bgTitle}
+          helperText={addFormErrorMsg.bgTitle}
+          margin='dense'
+          fullWidth
+        />
+        <TextField 
+          required
+          id="bgMinPlayers"
+          name="bgMinPlayers"
+          label="Joueurs Minimum"
+          value={addFormData.bgMinPlayers}
+          onChange={handleInputChange}
+          error={addFormError.bgMinPlayers}
+          helperText={addFormErrorMsg.bgMinPlayers}
+          margin='dense'
+        />
+        <TextField 
+          required
+          id="bgMaxPlayers"
+          name="bgMaxPlayers"
+          label="Joueurs Maximum"
+          value={addFormData.bgMaxPlayers}
+          onChange={handleInputChange}
+          error={addFormError.bgMaxPlayers}
+          helperText={addFormErrorMsg.bgMaxPlayers}
+          margin='dense'
+        />
+        <TextField 
+          required
+          id="bgDuration"
+          name="bgDuration"
+          label="Durée (minutes)"
+          value={addFormData.bgDuration}
+          onChange={handleInputChange}
+          error={addFormError.bgDuration}
+          helperText={addFormErrorMsg.bgDuration}
+          margin='dense'
+        />
+        <TextField 
+          required
+          id="bgMinAge"
+          name="bgMinAge"
+          label="Âge minimum"
+          value={addFormData.bgMinAge}
+          onChange={handleInputChange}
+          error={addFormError.bgMinAge}
+          helperText={addFormErrorMsg.bgMinAge}
+          margin='dense'
+        />
+        <TextField 
+          required
+          id="bgPictureUrl"
+          name="bgPictureUrl"
+          label="Durée (minutes)"
+          value={addFormData.bgPictureUrl}
+          onChange={handleInputChange}
+          error={addFormError.bgPictureUrl}
+          helperText={addFormErrorMsg.bgPictureUrl}
+          margin='dense'
+        />
+        <TextField
+          required
+          id="bgCategory1"
+          name="bgCategory1"
+          select
+          label="Catégorie 1"
+          value={addFormData.bgCategories[0] ? addFormData.bgCategories[0] : ''}
+          onChange={handleInputChange}
+          error={addFormError.bgCategory1}
+          helperText={addFormErrorMsg.bgCategory1}
+          margin='dense'
+          placeholder='Catégorie 1'
+        >
+          {categories.map((category) => <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>)}
+        </TextField>
+        { addFormData.bgCategories.length >= 1 && 
+          <TextField
+            id="bgCategory2"
+            name="bgCategory2"
+            select
+            label="Catégorie 2"
+            value={addFormData.bgCategories[1] ? addFormData.bgCategories[1] : ''}
+            onChange={handleInputChange}
+            error={addFormError.bgCategory2}
+            helperText={addFormErrorMsg.bgCategory2}
+            margin='dense'
+            placeholder='Catégorie 2'
+          >
+            {categories.filter(category => category.id !== addFormData.bgCategories[0])
+              .map((category) => <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>)}
+          </TextField>
+        }
+        { addFormData.bgCategories.length >= 2 && 
+          <TextField
+            id="bgCategory3"
+            name="bgCategory3"
+            select
+            label="Catégorie 3"
+            value={addFormData.bgCategories[2] ? addFormData.bgCategories[2] : ''}
+            onChange={handleInputChange}
+            error={addFormError.bgCategory3}
+            helperText={addFormErrorMsg.bgCategory3}
+            margin='dense'
+            placeholder='Catégorie 3'
+          >
+            {categories.filter(category => category.id !== addFormData.bgCategories[0] && category.id !== addFormData.bgCategories[1])
+              .map((category) => <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>)}
+          </TextField>
+        }
+
+    </Box>
+    
+    </div>
+  )
+
+
+
   return (
     <div className="add">
       <h1 className="add-title">Ajouter un jeu</h1>
@@ -21,9 +154,7 @@ const AddForm = ( { addFormError, addFormErrorMsg, addFormData, handleAddForm, h
             </div>
           )}
           <h2 className="add-form--main--title">Informations générales</h2>
-          <label htmlFor="bgTitle">Titre du jeu
-            <input type="text" id="bgTitle" name="bgTitle" placeholder="Catan" onChange={handleInputChange} value={addFormData.bgTitle}></input>
-          </label>
+          
           <label htmlFor="bgMinPlayers">Minimum de Joueurs
             <input type="number" id="bgMinPlayers" name="bgMinPlayers" placeholder={1} onChange={handleInputChange} value={addFormData.bgMinPlayers}></input>
           </label>

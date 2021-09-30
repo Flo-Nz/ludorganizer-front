@@ -1,15 +1,11 @@
 // == Import : npm
 import React from 'react';
 import { render } from 'react-dom';
-import 'semantic-ui-css/semantic.min.css'
-// react-router-dom : bibliothèque qui permet d'interagir avec la barre d'adresse
-// du navigateur, mais sans recharger la page. Elle utilise l'API History du
-// navigateur
-// https://developer.mozilla.org/en-US/docs/Web/API/History
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
-// BrowserRouter doit englober toute notre application pour que react-router-dom
-// puisse gérer l'affichage en fonction de l'URL
-// On importe un composant qui s'appelle BrowserRouter mais on renomme en Router
 import { BrowserRouter as Router } from 'react-router-dom';
 
 // == Import : local

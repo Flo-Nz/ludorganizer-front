@@ -13,6 +13,7 @@ import useGet from 'src/hooks/useGet';
 import './styles.scss';
 import Boardgames from '../Boardgames';
 import AddForm from '../AddForm';
+import { number } from 'prop-types';
 
 const BASE_URL = 'http://localhost:3000/v1';
 
@@ -30,6 +31,36 @@ const App = () => {
     bgThemes: [],
     bgDifficulty: '1'
   }
+  const bgDefaultError = {
+    bgTitle: false,
+    bgMinPlayers: false,
+    bgMaxPlayers: false,
+    bgDuration: false,
+    bgMinAge: false,
+    bgPictureUrl: false,
+    bgCategory1: false,
+    bgCategory2: false,
+    bgCategory3: false,
+    bgTheme1: false,
+    bgTheme2: false,
+    bgTheme3: false,
+    bgDifficulty: false
+  }
+  const bgDefaultErrorMsg = {
+    bgTitle: '',
+    bgMinPlayers: '',
+    bgMaxPlayers: '',
+    bgDuration: '',
+    bgMinAge: '',
+    bgPictureUrl: '',
+    bgCategory1: '',
+    bgCategory2: '',
+    bgCategory3: '',
+    bgTheme1: '',
+    bgTheme2: '',
+    bgTheme3: '',
+    bgDifficulty: ''
+  }
 
   const [loading, setLoading] = useState(false);
   const [boardgames, setBoardgames] = useState([]);
@@ -37,9 +68,9 @@ const App = () => {
   const [themes, themesLoading] = useGet(`${BASE_URL}/themes`);
   const [difficulties, diffLoading] = useGet(`${BASE_URL}/difficulties`);  
   const [addFormData, setAddFormData] = useState(bgDefaultValues);
-  const [addFormError, setAddFormError] = useState(false);
-  const [addFormErrorMsg, setAddFormErrorMsg] = useState('');
-  const [lastGameAdded, setLastGameAdded] = useState('');
+  const [addFormError, setAddFormError] = useState(bgDefaultError);
+  const [addFormErrorMsg, setAddFormErrorMsg] = useState(bgDefaultErrorMsg);
+  const [lastGameModified, setLastGameModified] = useState('');
   
   const fetchBoardgames = () => {
       setLoading(true);
@@ -61,28 +92,36 @@ const App = () => {
 
   useEffect(() => {
       fetchBoardgames();
-  }, [lastGameAdded]);
+  }, [lastGameModified]);
   
 
   const handleInputChange = (evt) => {
+    // Pour des soucis de lisibilité, on va stocker target, value, name dans des variables.
     const target = evt.target;
+    // Value pourrait éventuellement être une checkbox donc on utilise une ternaire simple pour récupérer le checked dans ce cas, sinon target.value classique.
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
-    if (name === 'bgCategories' || name === 'bgThemes') {
-      const options = evt.target.options;
-      const value = [];
-      for (const option of options) {
-        if (option.selected) {
-          value.push(option.value);
-        }
+      if (name.includes('bgCategory')) {
+        setAddFormError(bgDefaultError);
+        setAddFormErrorMsg(bgDefaultErrorMsg)
+        const newAddFormData = {...addFormData};
+        // On récupère le numéro de la catégorie choisie grâce au name qui termine par son numéro.
+        const index = parseInt(name.substring(name.length - 1)) - 1;
+        newAddFormData.bgCategories[index] = value;
+        setAddFormData(newAddFormData);
+        return;
       }
-      setAddFormError(false);
-      const newAddFormData = {...addFormData};
-      newAddFormData[name] = value;
-      setAddFormData(newAddFormData);
-      return;
-    }
+
+      if (name.includes('bgTheme')) {
+        setAddFormError(bgDefaultError);
+        setAddFormErrorMsg(bgDefaultErrorMsg)
+        const newAddFormData = {...addFormData};
+        newAddFormData.bgThemes.push(value);
+        setAddFormData(newAddFormData);
+        return;
+      }
+      
     /*
      * Gestion des cas d'erreur / exceptions
      * 
@@ -90,8 +129,12 @@ const App = () => {
     if (name === 'bgTitle') {
       // On ne peut pas commencer par un espace
       if (value !== '' && value === ' ') {
-        setAddFormErrorMsg("Le titre d'un jeu ne peut commencer par un espace.");
-        setAddFormError(true);
+        const errorMsg = {...addFormErrorMsg};
+        errorMsg[name]= "Le titre d'un jeu ne peut commencer par un espace";
+        setAddFormErrorMsg(errorMsg);
+        const error = {...addFormError};
+        error[name] = true;
+        setAddFormError(error);
         return;
       } 
       
@@ -101,34 +144,59 @@ const App = () => {
       }
     }
 
-    if (name === 'bgMinPlayers' && addFormData.bgMaxPlayers !== '') {
-      if (value !== '' && parseInt(value) > parseInt(addFormData.bgMaxPlayers)) {
-        setAddFormErrorMsg(`Le nombre de joueurs minimum ne peut pas être supérieur au nombre maximum de joueurs.`)
-        setAddFormError(true);
+    // On vérifie que seuls des chiffres sont entrés.
+    if (name === 'bgMinPlayers' || name === 'bgMaxPlayers' || name === 'duration' || name === 'bgMinAge') {
+      if (isNaN(parseInt(value)) && value !== '') {
         return;
       }
+      if (isNaN(parseInt(value.substring(value.length - 1))) && value !== '')
+        return;
+    }
+
+    if (name === 'bgMinPlayers' && addFormData.bgMaxPlayers !== '') {
+      if (value !== '' && parseInt(value) > parseInt(addFormData.bgMaxPlayers)) {
+        const errorMsg = {...addFormErrorMsg};
+        errorMsg[name]= "Joueurs minimum ne peut être supérieur au maximum.";
+        setAddFormErrorMsg(errorMsg);
+        const error = {...addFormError};
+        error[name] = true;
+        setAddFormError(error);
+        return;
+      } 
     }
 
     if (name === 'bgMaxPlayers' && addFormData.bgMinPlayers !== '') {
       if (value !== '' && parseInt(value) < parseInt(addFormData.bgMinPlayers)) {
-        setAddFormErrorMsg(`Le nombre de joueurs maximum ne peut pas être inférieur au nombre minimum de joueurs.`)
-        setAddFormError(true);
+        const errorMsg = {...addFormErrorMsg};
+        errorMsg[name]= "Joueurs max ne peut être inférieur au minimum.";
+        setAddFormErrorMsg(errorMsg);
+        const error = {...addFormError};
+        error[name] = true;
+        setAddFormError(error);
         return;
       }
     }
 
     if (name === 'bgDuration') {
       if (value !== '' && parseInt(value) === 0) {
-        setAddFormErrorMsg(`La durée d'un jeu ne peut pas être de ${value} minute.`);
-        setAddFormError(true);
+        const errorMsg = {...addFormErrorMsg};
+        errorMsg[name]= `La durée d'un jeu ne peut pas être de ${value} minute.`;
+        setAddFormErrorMsg(errorMsg);
+        const error = {...addFormError};
+        error[name] = true;
+        setAddFormError(error);
         return;
       }
     }
 
     if (name === 'bgMinAge') {
       if (value !== '' && (parseInt(value) === 0 || parseInt(value) > 18) ) {
-        setAddFormErrorMsg(`L'âge minimum ne peut être de ${value}.`);
-        setAddFormError(true);
+        const errorMsg = {...addFormErrorMsg};
+        errorMsg[name]= `L'âge minimum ne peut être de ${value}.`;
+        setAddFormErrorMsg(errorMsg);
+        const error = {...addFormError};
+        error[name] = true;
+        setAddFormError(error);
         return;
       }
     }
@@ -136,6 +204,7 @@ const App = () => {
     // Si tout se passe correctement, alors il n'y a plus d'erreur, on propage les données d'addformdata dans un nouvel objet pour respecter la programmation fonctionnelle, puis on écrase dans ce nouvel objet la valeur qui nous intéresse avant de mettre à jour le state avec ce nouvel objet.
 
     setAddFormError(false);
+    setAddFormErrorMsg(bgDefaultErrorMsg)
     const newAddFormData = {...addFormData};
     newAddFormData[name]= value;
     setAddFormData(newAddFormData);
@@ -219,7 +288,7 @@ const App = () => {
           newBg.themesSaved = data.themesSaved;
         }
         // Ici tout est OK donc on garde en mémoire dans le state le dernier jeu ajouté et on remet les valeurs par défaut de l'addFormData.
-        setLastGameAdded(newBg);
+        setLastGameModified(newBg);
         setAddFormData(bgDefaultValues);
       })
       .catch((err) => {

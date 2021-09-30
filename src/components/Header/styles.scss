@@ -4,10 +4,10 @@
 .main-header {
     text-align: center;
     padding: vars.$gutter;
-    background-color: vars.$primary-color;
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
 
     &-title {
-        color: vars.$alt-color;
         font-family: vars.$title-font;
         font-size: 5rem;
         transition: ease-in-out 0.5s;
@@ -28,14 +28,14 @@
         font-weight: bold;
         margin: 0 1rem;
         cursor: pointer;
-        color: vars.$alt-color;
+        color: vars.$primary-color;
 
         &:hover {
-            color: color.scale(vars.$alt-color, $lightness: -20%);
+            color: color.scale(vars.$primary-color, $lightness: 40%);
         }
 
         &--selected {
-            color: color.scale(vars.$alt-color, $blackness: 50%);
+            color: color.scale(vars.$primary-color, $lightness: 60%);
         }
     }
 }
