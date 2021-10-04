@@ -13,9 +13,7 @@ import useGet from 'src/hooks/useGet';
 import './styles.scss';
 import Boardgames from '../Boardgames';
 import AddForm from '../AddForm';
-import { number } from 'prop-types';
-
-const BASE_URL = 'http://localhost:3000/v1';
+import apiUrl from '../../utils/api-url';
 
 // == Composant
 const App = () => {
@@ -29,7 +27,7 @@ const App = () => {
     bgPictureUrl: '',
     bgCategories: [],
     bgThemes: [],
-    bgDifficulty: '1'
+    bgDifficulty: ''
   }
   const bgDefaultError = {
     bgTitle: false,
@@ -47,36 +45,40 @@ const App = () => {
     bgDifficulty: false
   }
   const bgDefaultErrorMsg = {
-    bgTitle: '',
-    bgMinPlayers: '',
-    bgMaxPlayers: '',
-    bgDuration: '',
-    bgMinAge: '',
-    bgPictureUrl: '',
-    bgCategory1: '',
-    bgCategory2: '',
-    bgCategory3: '',
-    bgTheme1: '',
-    bgTheme2: '',
-    bgTheme3: '',
-    bgDifficulty: ''
+    bgTitle: 'Titre du jeu',
+    bgMinPlayers: 'Minimum de joueurs',
+    bgMaxPlayers: 'Maximum de joueurs',
+    bgDuration: 'Durée d\'une partie en minutes',
+    bgMinAge: 'Âge requis pour jouer',
+    bgPictureUrl: 'Uniquement .jpg, .png',
+    bgCategory1: 'Catégorie principale du jeu',
+    bgCategory2: 'Catégorie 2 (optionnelle)',
+    bgCategory3: 'Catégorie 3 (optionnelle)',
+    bgTheme1: 'Thème principal du jeu',
+    bgTheme2: 'Thème 2 (optionnel)',
+    bgDifficulty: 'Choisir une difficulté'
   }
+
+  const defaultSubmitAddFormErr = {err: false, msg: ''};
+  const defaultSubmitAddFormOk = {ok: false, msg: ''};
 
   const [loading, setLoading] = useState(false);
   const [boardgames, setBoardgames] = useState([]);
-  const [categories, catLoading] = useGet(`${BASE_URL}/categories`);
-  const [themes, themesLoading] = useGet(`${BASE_URL}/themes`);
-  const [difficulties, diffLoading] = useGet(`${BASE_URL}/difficulties`);  
+  const [categories, catLoading] = useGet(`${apiUrl}/categories`);
+  const [themes, themesLoading] = useGet(`${apiUrl}/themes`);
+  const [difficulties, diffLoading] = useGet(`${apiUrl}/difficulties`);  
   const [addFormData, setAddFormData] = useState(bgDefaultValues);
   const [addFormError, setAddFormError] = useState(bgDefaultError);
   const [addFormErrorMsg, setAddFormErrorMsg] = useState(bgDefaultErrorMsg);
+  const [submitAddFormErr, setSubmitAddFormErr] = useState(defaultSubmitAddFormErr);
+  const [submitAddFormOk, setSubmitAddFormOk] = useState(defaultSubmitAddFormOk);
   const [lastGameModified, setLastGameModified] = useState('');
   
   const fetchBoardgames = () => {
       setLoading(true);
       axios({
           method: 'get', 
-          url: BASE_URL + '/boardgames'
+          url: apiUrl + '/boardgames'
       })
           .then((res) => {
               const {data} = res;
@@ -108,18 +110,36 @@ const App = () => {
         const newAddFormData = {...addFormData};
         // On récupère le numéro de la catégorie choisie grâce au name qui termine par son numéro.
         const index = parseInt(name.substring(name.length - 1)) - 1;
-        newAddFormData.bgCategories[index] = value;
-        setAddFormData(newAddFormData);
-        return;
+        // Si l'option choisie est la valeur vide on ne veut pas insérer mais supprimer dans le tableau
+        if (value === '') {
+          newAddFormData.bgCategories.splice(index,1);
+          setAddFormData(newAddFormData);
+          return;
+        } else {
+          newAddFormData.bgCategories[index] = value;
+          setAddFormData(newAddFormData);
+          return;
+        }
+        
       }
 
       if (name.includes('bgTheme')) {
         setAddFormError(bgDefaultError);
         setAddFormErrorMsg(bgDefaultErrorMsg)
         const newAddFormData = {...addFormData};
-        newAddFormData.bgThemes.push(value);
-        setAddFormData(newAddFormData);
-        return;
+        // On récupère le numéro de la catégorie choisie grâce au name qui termine par son numéro.
+        const index = parseInt(name.substring(name.length - 1)) - 1;
+        // Si l'option choisie est la valeur vide on ne veut pas insérer mais supprimer dans le tableau
+        if (value === '') {
+          newAddFormData.bgThemes.splice(index,1);
+          setAddFormData(newAddFormData);
+          return;
+        } else {
+          newAddFormData.bgThemes[index] = value;
+          setAddFormData(newAddFormData);
+          return;
+        }
+        
       }
       
     /*
@@ -145,7 +165,7 @@ const App = () => {
     }
 
     // On vérifie que seuls des chiffres sont entrés.
-    if (name === 'bgMinPlayers' || name === 'bgMaxPlayers' || name === 'duration' || name === 'bgMinAge') {
+    if (name === 'bgMinPlayers' || name === 'bgMaxPlayers' || name === 'bgDuration' || name === 'bgMinAge') {
       if (isNaN(parseInt(value)) && value !== '') {
         return;
       }
@@ -161,42 +181,55 @@ const App = () => {
         const error = {...addFormError};
         error[name] = true;
         setAddFormError(error);
+        // On remet la valeur par défaut si l'utilisateur a entré un mauvais nombre pour éviter que le nombre valide apparaisse comme une erreur.
+        const newAddFormData = {...addFormData};
+        newAddFormData[name] = bgDefaultValues[name];
+        setAddFormData(newAddFormData);
         return;
-      } 
-    }
-
-    if (name === 'bgMaxPlayers' && addFormData.bgMinPlayers !== '') {
-      if (value !== '' && parseInt(value) < parseInt(addFormData.bgMinPlayers)) {
+      }
+      if (parseInt(value) <= 0) {
         const errorMsg = {...addFormErrorMsg};
-        errorMsg[name]= "Joueurs max ne peut être inférieur au minimum.";
+        errorMsg[name]= "La valeur ne peut être négative.";
         setAddFormErrorMsg(errorMsg);
         const error = {...addFormError};
         error[name] = true;
         setAddFormError(error);
+        // On remet la valeur par défaut si l'utilisateur a entré un mauvais nombre pour éviter que le nombre valide apparaisse comme une erreur.
+        const newAddFormData = {...addFormData};
+        newAddFormData[name] = bgDefaultValues[name];
+        setAddFormData(newAddFormData);
         return;
       }
     }
 
     if (name === 'bgDuration') {
-      if (value !== '' && parseInt(value) === 0) {
+      if (value !== '' && parseInt(value) <= 0) {
         const errorMsg = {...addFormErrorMsg};
         errorMsg[name]= `La durée d'un jeu ne peut pas être de ${value} minute.`;
         setAddFormErrorMsg(errorMsg);
         const error = {...addFormError};
         error[name] = true;
         setAddFormError(error);
+        // On remet la valeur par défaut si l'utilisateur a entré un mauvais nombre pour éviter que le nombre valide apparaisse comme une erreur.
+        const newAddFormData = {...addFormData};
+        newAddFormData[name] = bgDefaultValues[name];
+        setAddFormData(newAddFormData);
         return;
       }
     }
 
     if (name === 'bgMinAge') {
-      if (value !== '' && (parseInt(value) === 0 || parseInt(value) > 18) ) {
+      if (value !== '' && (parseInt(value) <= 0 || parseInt(value) > 18) ) {
         const errorMsg = {...addFormErrorMsg};
         errorMsg[name]= `L'âge minimum ne peut être de ${value}.`;
         setAddFormErrorMsg(errorMsg);
         const error = {...addFormError};
         error[name] = true;
         setAddFormError(error);
+        // On remet la valeur par défaut si l'utilisateur a entré un mauvais nombre pour éviter que le nombre valide apparaisse comme une erreur.
+        const newAddFormData = {...addFormData};
+        newAddFormData[name] = bgDefaultValues[name];
+        setAddFormData(newAddFormData);
         return;
       }
     }
@@ -211,6 +244,17 @@ const App = () => {
   }
 
   const handleAddForm = (newBg) => {
+    
+    if (parseInt(newBg.bgMaxPlayers) < parseInt(newBg.bgMinPlayers)) {
+      const errorMsg = {...addFormErrorMsg};
+      errorMsg.bgMaxPlayers= "Joueurs max ne peut être inférieur au minimum.";
+      setAddFormErrorMsg(errorMsg);
+      const error = {...addFormError};
+      error.bgMaxPlayers = true;
+      setAddFormError(error);
+      return;
+
+    }
     // On commence par regarder si les données sont complétées. S'il manque une donnée, on return un message d'erreur.
     for (const prop in newBg) {
       // Si une des propriétés de notre objet data a une valeur null, undefined ou string vide, on ne continue pas et on met à jour le message d'erreur.
@@ -228,15 +272,14 @@ const App = () => {
           setAddFormError(true);  
           return;
         }
-      
-      }
+      } 
     }
     // Si tout est ok on appelle postNewBg
     postNewBg(newBg);
   }
 
   const postNewBg = (newBg) => {
-    const url = BASE_URL + '/boardgames'
+    const url = apiUrl + '/boardgames'
     setLoading(true);
     axios({
       method: 'post',
@@ -261,7 +304,16 @@ const App = () => {
         }
       })
       .catch((err) => {
-        console.log('error: ', err);
+        const newSubmitAddFormErr = {...submitAddFormErr};
+        newSubmitAddFormErr.err = true;
+        console.log('erreur : ', err);
+        if (err.message.includes('409')) {
+          newSubmitAddFormErr.msg = `Le jeu ${newBg.bgTitle} existe déjà en base !`
+        } else {
+          newSubmitAddFormErr.msg = `Erreur lors de l'ajout du jeu ${newBg.bgTitle}. Veuillez réessayer.`;
+        }
+        newSubmitAddFormErr.info = err;
+        setSubmitAddFormErr(newSubmitAddFormErr);
       })
       .finally(() => {
         setLoading(false);
@@ -271,7 +323,7 @@ const App = () => {
   const postCatOrTheme = (newBg) => {
     axios({
       method: 'post',
-      url: BASE_URL + '/boardgames/catortheme',
+      url: apiUrl + '/boardgames/catortheme',
       data: {
         id: newBg.id,
         categories: newBg.bgCategories,
@@ -280,7 +332,6 @@ const App = () => {
     })
       .then((res) => {
         const {data} = res;
-        console.log('data après ajout des cat et theme: ', data);
         if (data.categoriesSaved !== undefined) {
           newBg.categoriesSaved = data.categoriesSaved;      
         }
@@ -290,9 +341,23 @@ const App = () => {
         // Ici tout est OK donc on garde en mémoire dans le state le dernier jeu ajouté et on remet les valeurs par défaut de l'addFormData.
         setLastGameModified(newBg);
         setAddFormData(bgDefaultValues);
+        // On s'assure que le submitAddFormErr soit bien remis à false.
+        const newSubmitAddFormErr = {...submitAddFormErr};
+        newSubmitAddFormErr.err = false;
+        setSubmitAddFormErr(newSubmitAddFormErr);
+        // On configure le message pour que le submitAddFormOk soit à true.
+        const newSubmitAddFormOk = {...submitAddFormOk};
+        newSubmitAddFormOk.ok = true;
+        newSubmitAddFormOk.msg = `Le jeu ${newBg.bgTitle} a bien été ajouté à la base !`;
+        setSubmitAddFormOk(newSubmitAddFormOk);
       })
       .catch((err) => {
-        console.log('error :', err);
+        const newSubmitAddFormErr = {...submitAddFormErr};
+        newSubmitAddFormErr.err = true;
+        newSubmitAddFormErr.msg = `Erreur lors de l'ajout du jeu ${newBg.bgTitle}. Veuillez réessayer.`;
+        newSubmitAddFormErr.info = err;
+        console.log(newSubmitAddFormErr.info);
+        setSubmitAddFormErr(newSubmitAddFormErr);
       });
   }
 
@@ -305,6 +370,9 @@ const App = () => {
           !loading && <Boardgames boardgames={boardgames} categories={categories} />
         }
         </Route>
+        <Route path="/signin">
+          
+        </Route>
         <Route path="/addbg">
           <AddForm 
             categories={categories} 
@@ -315,6 +383,8 @@ const App = () => {
             addFormData={addFormData} 
             addFormError={addFormError}
             addFormErrorMsg={addFormErrorMsg}
+            submitAddFormErr={submitAddFormErr}
+            submitAddFormOk={submitAddFormOk}
           />
         </Route>
         <Route>
